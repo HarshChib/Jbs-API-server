@@ -1,6 +1,7 @@
 const model=require('../models/Job')
 const {StatusCodes}=require('http-status-codes')
 const NotFoundError=require('../errors/not-found')
+const BadRequestError=require('../errors/bad-request')
 const getAllJobs=async(req,res)=>{
    
     const jobs=await model.find({createdBy:req.user.id}).sort('createdAt')
@@ -36,7 +37,7 @@ const updateJobs=async(req,res)=>{
       if (company === '' || position === '') {
         throw new BadRequestError('Company or Position fields cannot be empty')
       }
-      const job = await Job.findByIdAndUpdate(
+      const job = await model.findByIdAndUpdate(
         { _id: jobId, createdBy: userId },
         req.body,
         { new: true, runValidators: true }
@@ -53,7 +54,7 @@ const deleteJobs=async(req,res)=>{
         params: { id: jobId },
       } = req
     
-      const job = await Job.findByIdAndRemove({
+      const job = await model.findByIdAndRemove({
         _id: jobId,
         createdBy: userId,
       })

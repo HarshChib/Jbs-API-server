@@ -6,14 +6,20 @@ const authRouter=require('./routes/auth')
 const jobsRouter=require('./routes/jobs')
 const connectDB=require('./db/connect')
 const authenticate=require('./middleware/authentication')
+
 // error handler
 const notFoundMiddleware = require('./middleware/not-found');
 const errorHandlerMiddleware = require('./middleware/error-handler');
+
 //security modules
 const helmet = require('helmet');
 const cors = require('cors');
 const xss = require('xss-clean');
 const rateLimiter = require('express-rate-limit');
+
+const swaggerui=require('swagger-ui-express')
+const YAML=require('yamljs')
+const swaggerDoc=YAML.load('./swagger.yaml')
 
 app.use(express.json());
 app.set('trust proxy', 1);
@@ -31,8 +37,10 @@ app.use(xss());
 
 // routes
 app.get('/', (req, res) => {
-  res.send('jobs api');
+  res.send(`<h1>JOBS API</h1><a href="/api-Docs">DOCUMENTATION<a>`);
 });
+
+app.use('/api-Docs',swaggerui.serve,swaggerui.setup(swaggerDoc))
 app.use('/api/v1/auth',authRouter)
 app.use('/api/v1/jobs',authenticate,jobsRouter)
 app.use(notFoundMiddleware);
